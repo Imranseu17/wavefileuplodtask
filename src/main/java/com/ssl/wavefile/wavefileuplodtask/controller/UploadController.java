@@ -7,6 +7,7 @@ import com.ssl.wavefile.wavefileuplodtask.model.Webfile;
 import com.ssl.wavefile.wavefileuplodtask.repository.Csvrepository;
 import com.ssl.wavefile.wavefileuplodtask.repository.Transactionrepository;
 import com.ssl.wavefile.wavefileuplodtask.repository.Webrepository;
+import com.ssl.wavefile.wavefileuplodtask.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,9 @@ public class UploadController {
 
     @Autowired
     Csvrepository csvrepository;
+
+    @Autowired
+    StorageService storageService;
 
     //Save the uploaded file to this folder
     private static String UPLOADED_FOLDER = "/home/imran/Downloads/wavefile/";
@@ -63,6 +67,7 @@ public class UploadController {
             byte[] bytes = webfile.getBytes();
             Path path = Paths.get(UPLOADED_FOLDER + webfile.getOriginalFilename());
             Files.write(path, bytes);
+            storageService.store(webfile);
             webfileclass.setFileName(webfile.getOriginalFilename());
             webrepository.save(webfileclass);
             redirectAttributes.addFlashAttribute("message",
